@@ -1,0 +1,10 @@
+/*
+ * xiao_ble.overlay
+ * XIAO nRF52840 固有の設定
+ *
+ * NFC1/NFC2 ピン（P0.09/P0.10）をGPIOとして使用するための設定
+ * ZMK main (Zephyr 4.1以降) では CONFIG_NFCT_PINS_AS_GPIOS は廃止済み
+ */
+&uicr {
+    nfct-pins-as-gpios;
+};
