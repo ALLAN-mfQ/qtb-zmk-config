@@ -65,17 +65,13 @@
     cs-gpios = <&xiao_d 7 GPIO_ACTIVE_LOW>;         /* D7 / P1.12 */
 
     trackball: trackball@0 {
-        compatible = "pixart,pmw3610";
+        status = "okay";
+        compatible = "pixart,pmw3610-alt";
         reg = <0>;
         spi-max-frequency = <2000000>;
-        motion-gpios = <&xiao_d 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; /* D6 / P1.11 */
+        irq-gpios = <&xiao_d 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; /* D6 / P1.11 */
 
         cpi = <800>;
-        evt-type = <INPUT_EV_REL>;
-        x-input-code = <INPUT_REL_X>;
-        y-input-code = <INPUT_REL_Y>;
-
-        force-awake;
-        force-awake-4ms-mode;
+        invert-y;
     };
 };
