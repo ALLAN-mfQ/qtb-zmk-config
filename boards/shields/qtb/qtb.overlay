@@ -32,7 +32,8 @@
             , <&xiao_d 3 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>   /* MB4         */
             , <&xiao_d 4 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>   /* MB5         */
             , <&xiao_d 5 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>   /* CPI切り替え  */
-            , <&xiao_d 10 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* BT_CLR_ALL  */
+            , <&xiao_d 10 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* スクロールレイヤー  */
+            , <&gpio0 9  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>   /* BT_CLR_ALL  */
             ;
     };
 };

@@ -95,8 +95,9 @@
                 &mkp RCLK       /* D1  */
                 &mkp MCLK       /* D2  */
                 &mkp MB4        /* D3  */
-                &mo 1           /* D4  : ホールドでScrollレイヤー */
+                &mkp MB5        /* D4  : ホールドでScrollレイヤー */
                 &to 2           /* D5  : → 1200 CPI へ */
+                &mo 1           /* D10  : ホールドでScrollレイヤー */
                 &bt BT_CLR_ALL  /* NFC1: Bluetooth全クリア */
             >;
         };
@@ -111,7 +112,9 @@
                 &trans  /* MB4  */
                 &trans  /* ホールド継続 */
                 &trans  /* CPI切替無効 */
+                &trans
                 &trans  /* BT  */
+                 
             >;
         };
 
@@ -123,8 +126,9 @@
                 &mkp RCLK
                 &mkp MCLK
                 &mkp MB4
-                &mo 1
+                &mkp MB5
                 &to 3           /* → 1600 CPI へ */
+                &mo 1
                 &bt BT_CLR_ALL
             >;
         };
@@ -137,8 +141,9 @@
                 &mkp RCLK
                 &mkp MCLK
                 &mkp MB4
-                &mo 1
+                &mkp MB5
                 &to 4           /* → 400 CPI へ */
+                &mo 1
                 &bt BT_CLR_ALL
             >;
         };
@@ -151,8 +156,9 @@
                 &mkp RCLK
                 &mkp MCLK
                 &mkp MB4
-                &mo 1
+                &mkp MB5
                 &to 0           /* → 800 CPI（最初）に戻る */
+                &mo 1
                 &bt BT_CLR_ALL
             >;
         };
