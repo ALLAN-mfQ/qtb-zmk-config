@@ -1,0 +1,6 @@
+if SHIELD_QTB
+
+config ZMK_KEYBOARD_NAME
+    default "QTB"
+
+endif

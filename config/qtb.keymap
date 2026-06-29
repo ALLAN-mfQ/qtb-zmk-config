@@ -1,0 +1,160 @@
+/* qtb.keymap */
+#include <behaviors.dtsi>
+#include <dt-bindings/zmk/keys.h>
+#include <dt-bindings/zmk/bt.h>
+#include <dt-bindings/zmk/pointing.h>
+#include <input/processors.dtsi>
+#include <zephyr/dt-bindings/input/input-event-codes.h>
+
+/ {
+    /* -----------------------------------------------------------
+     * トラックボール入力プロセッサー
+     * ----------------------------------------------------------- */
+
+    /* カーソル移動スケーラー */
+    zip_xy_scaler: zip_xy_scaler {
+        compatible = "zmk,input-processor-scaler";
+        #input-processor-cells = <2>;
+        type = <INPUT_EV_REL>;
+        codes = <INPUT_REL_X INPUT_REL_Y>;
+    };
+
+    /* スクロールスケーラー */
+    zip_scroll_scaler: zip_scroll_scaler {
+        compatible = "zmk,input-processor-scaler";
+        #input-processor-cells = <2>;
+        type = <INPUT_EV_REL>;
+        codes = <INPUT_REL_X INPUT_REL_Y>;
+    };
+
+    /* Y軸をスクロールホイールにマッピング */
+    zip_scroll_mapper: zip_scroll_mapper {
+        compatible = "zmk,input-processor-code-mapper";
+        #input-processor-cells = <0>;
+        type = <INPUT_EV_REL>;
+        map = <INPUT_REL_Y INPUT_REL_WHEEL>;
+    };
+
+    /* -----------------------------------------------------------
+     * トラックボールリスナー
+     *   Layer 0 (800CPI)  : デフォルト等倍
+     *   Layer 1 (Scroll)  : MB5ホールド中、Y軸→スクロール
+     *   Layer 2 (1200CPI) : 1.5倍速
+     *   Layer 3 (1600CPI) : 3倍速
+     *   Layer 4 (400CPI)  : 0.5倍速
+     * ----------------------------------------------------------- */
+    trackball_listener {
+        compatible = "zmk,input-listener";
+        device = <&trackball>;
+
+        scroll_layer {
+            layers = <1>;
+            input-processors = <&zip_scroll_scaler (-1) 32>, <&zip_scroll_mapper>;
+        };
+
+        layer_1200 {
+            layers = <2>;
+            input-processors = <&zip_xy_scaler 3 2>;
+        };
+
+        layer_1600 {
+            layers = <3>;
+            input-processors = <&zip_xy_scaler 3 1>;
+        };
+
+        layer_400 {
+            layers = <4>;
+            input-processors = <&zip_xy_scaler 1 2>;
+        };
+
+        default_layer {
+            layers = <0>;
+            input-processors = <&zip_xy_scaler 1 1>;
+        };
+    };
+
+    /* -----------------------------------------------------------
+     * キーマップ
+     *
+     *  D0: LCLK
+     *  D1: RCLK
+     *  D2: MCLK
+     *  D3: MB4
+     *  D4: MB5 / ホールドでScrollレイヤー(Layer 1)
+     *  D5: CPI切り替え（押すたびに順送り）
+     *  NFC1: BT_CLR_ALL
+     * ----------------------------------------------------------- */
+    keymap {
+        compatible = "zmk,keymap";
+
+        /* Layer 0: デフォルト 800 CPI */
+        default_layer {
+            display-name = "800";
+            bindings = <
+                &mkp LCLK       /* D0  */
+                &mkp RCLK       /* D1  */
+                &mkp MCLK       /* D2  */
+                &mkp MB4        /* D3  */
+                &mo 1           /* D4  : ホールドでScrollレイヤー */
+                &to 2           /* D5  : → 1200 CPI へ */
+                &bt BT_CLR_ALL  /* NFC1: Bluetooth全クリア */
+            >;
+        };
+
+        /* Layer 1: スクロールモード（MB5ホールド中） */
+        scroll_layer {
+            display-name = "Scroll";
+            bindings = <
+                &trans  /* LCLK */
+                &trans  /* RCLK */
+                &trans  /* MCLK */
+                &trans  /* MB4  */
+                &trans  /* ホールド継続 */
+                &trans  /* CPI切替無効 */
+                &trans  /* BT  */
+            >;
+        };
+
+        /* Layer 2: 1200 CPI */
+        layer_1200_cpi {
+            display-name = "1200";
+            bindings = <
+                &mkp LCLK
+                &mkp RCLK
+                &mkp MCLK
+                &mkp MB4
+                &mo 1
+                &to 3           /* → 1600 CPI へ */
+                &bt BT_CLR_ALL
+            >;
+        };
+
+        /* Layer 3: 1600 CPI */
+        layer_1600_cpi {
+            display-name = "1600";
+            bindings = <
+                &mkp LCLK
+                &mkp RCLK
+                &mkp MCLK
+                &mkp MB4
+                &mo 1
+                &to 4           /* → 400 CPI へ */
+                &bt BT_CLR_ALL
+            >;
+        };
+
+        /* Layer 4: 400 CPI */
+        layer_400_cpi {
+            display-name = "400";
+            bindings = <
+                &mkp LCLK
+                &mkp RCLK
+                &mkp MCLK
+                &mkp MB4
+                &mo 1
+                &to 0           /* → 800 CPI（最初）に戻る */
+                &bt BT_CLR_ALL
+            >;
+        };
+    };
+};
