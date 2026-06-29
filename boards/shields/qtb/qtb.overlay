@@ -1,6 +1,22 @@
 #include <zephyr/dt-bindings/input/input-event-codes.h>
 #include <input/processors.dtsi>
 
+/*
+ * XIAO nRF52840 ピン割り当て
+ *
+ *  D0  / P0.02 : LCLK
+ *  D1  / P0.03 : RCLK
+ *  D2  / P0.28 : MCLK
+ *  D3  / P0.29 : MB4
+ *  D4  / P0.04 : MB5
+ *  D5  / P0.05 : CPI切り替えボタン
+ *  D6  / P1.11 : IRQ
+ *  D7  / P1.12 : CS
+ *  D8  / P1.13 : SCLK (ハードウェアSPI)
+ *  D9  / P1.14 : SDIO (MOSI/MISO共通)
+ *  D10 / P1.15 : BT_CLR_ALL
+ */
+
 / {
     chosen {
         zmk,kscan = &kscan0;
@@ -10,13 +26,13 @@
         compatible = "zmk,kscan-gpio-direct";
         wakeup-source;
         input-gpios
-            = <&xiao_d 0 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
-            , <&xiao_d 1 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
-            , <&xiao_d 2 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
-            , <&xiao_d 3 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
-            , <&xiao_d 4 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
-            , <&xiao_d 5 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
-            , <&gpio0 9  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            = <&xiao_d 0 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>   /* LCLK        */
+            , <&xiao_d 1 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>   /* RCLK        */
+            , <&xiao_d 2 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>   /* MCLK        */
+            , <&xiao_d 3 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>   /* MB4         */
+            , <&xiao_d 4 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>   /* MB5         */
+            , <&xiao_d 5 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>   /* CPI切り替え  */
+            , <&xiao_d 10 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* BT_CLR_ALL  */
             ;
     };
 };
@@ -24,15 +40,15 @@
 &pinctrl {
     spi1_default: spi1_default {
         group1 {
-            psels = <NRF_PSEL(SPIM_SCK,  1, 13)>,
-                    <NRF_PSEL(SPIM_MOSI, 1, 15)>,
-                    <NRF_PSEL(SPIM_MISO, 1, 14)>;
+            psels = <NRF_PSEL(SPIM_SCK,  1, 13)>,  /* D8 : SCLK */
+                    <NRF_PSEL(SPIM_MOSI, 1, 14)>,  /* D9 : SDIO */
+                    <NRF_PSEL(SPIM_MISO, 1, 14)>;  /* D9 : SDIO (同じピン) */
         };
     };
     spi1_sleep: spi1_sleep {
         group1 {
             psels = <NRF_PSEL(SPIM_SCK,  1, 13)>,
-                    <NRF_PSEL(SPIM_MOSI, 1, 15)>,
+                    <NRF_PSEL(SPIM_MOSI, 1, 14)>,
                     <NRF_PSEL(SPIM_MISO, 1, 14)>;
             low-power-enable;
         };
@@ -45,14 +61,14 @@
     pinctrl-0 = <&spi1_default>;
     pinctrl-1 = <&spi1_sleep>;
     pinctrl-names = "default", "sleep";
-    cs-gpios = <&xiao_d 7 GPIO_ACTIVE_LOW>;
+    cs-gpios = <&xiao_d 7 GPIO_ACTIVE_LOW>;         /* D7 / P1.12 */
 
     trackball: trackball@0 {
         status = "okay";
         compatible = "pixart,pmw3610-alt";
         reg = <0>;
         spi-max-frequency = <2000000>;
-        irq-gpios = <&xiao_d 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+        irq-gpios = <&xiao_d 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; /* D6 / P1.11 */
         cpi = <800>;
         evt-type = <INPUT_EV_REL>;
         x-input-code = <INPUT_REL_X>;
