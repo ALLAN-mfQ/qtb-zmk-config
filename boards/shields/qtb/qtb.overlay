@@ -14,7 +14,8 @@
  *  D7  / P1.12 : CS
  *  D8  / P1.13 : SCLK (ハードウェアSPI)
  *  D9  / P1.14 : SDIO (MOSI/MISO共通)
- *  D10 / P1.15 : BT_CLR_ALL
+ *  D10 / P1.15 : スクロールレイヤー (mo 1)
+ *  NFC1/ P0.09 : BT_CLR_ALL
  */
 
 / {
@@ -26,14 +27,14 @@
         compatible = "zmk,kscan-gpio-direct";
         wakeup-source;
         input-gpios
-            = <&xiao_d 0 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>   /* LCLK        */
-            , <&xiao_d 1 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>   /* RCLK        */
-            , <&xiao_d 2 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>   /* MCLK        */
-            , <&xiao_d 3 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>   /* MB4         */
-            , <&xiao_d 4 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>   /* MB5         */
-            , <&xiao_d 5 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>   /* CPI切り替え  */
-            , <&xiao_d 10 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* スクロールレイヤー  */
-            , <&gpio0 9  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>   /* BT_CLR_ALL  */
+            = <&xiao_d 0  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* LCLK             */
+            , <&xiao_d 1  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* RCLK             */
+            , <&xiao_d 2  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* MCLK             */
+            , <&xiao_d 3  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* MB4              */
+            , <&xiao_d 4  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* MB5              */
+            , <&xiao_d 5  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* CPI切り替え       */
+            , <&xiao_d 10 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* スクロールレイヤー */
+            , <&gpio0 9   (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* BT_CLR_ALL       */
             ;
     };
 };
@@ -62,14 +63,14 @@
     pinctrl-0 = <&spi1_default>;
     pinctrl-1 = <&spi1_sleep>;
     pinctrl-names = "default", "sleep";
-    cs-gpios = <&xiao_d 7 GPIO_ACTIVE_LOW>;         /* D7 / P1.12 */
+    cs-gpios = <&xiao_d 7 GPIO_ACTIVE_LOW>;
 
     trackball: trackball@0 {
         status = "okay";
         compatible = "pixart,pmw3610-alt";
         reg = <0>;
         spi-max-frequency = <2000000>;
-        irq-gpios = <&xiao_d 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; /* D6 / P1.11 */
+        irq-gpios = <&xiao_d 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
         cpi = <800>;
         evt-type = <INPUT_EV_REL>;
         x-input-code = <INPUT_REL_X>;
