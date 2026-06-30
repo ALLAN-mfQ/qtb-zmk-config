@@ -74,7 +74,7 @@
             bindings = <
                 &mkp LCLK              &mkp RCLK   &mkp MCLK   &mkp MB4
                 &mkp MB5                &to 2       &msc SCRL_LEFT  &msc SCRL_RIGHT
-                &bt BT_CLR_ALL   &none       &none       &none
+                &bt BT_CLR_ALL   &mo 1       &none       &none
             >;
         };
 
@@ -94,7 +94,7 @@
             bindings = <
                 &mkp LCLK              &mkp RCLK   &mkp MCLK   &mkp MB4
                 &mkp MB5                &to 3       &msc SCRL_LEFT  &msc SCRL_RIGHT
-                &bt BT_CLR_ALL   &none       &none       &none
+                &bt BT_CLR_ALL   &mo 1       &none       &none
             >;
         };
 
@@ -104,7 +104,7 @@
             bindings = <
                 &mkp LCLK              &mkp RCLK   &mkp MCLK   &mkp MB4
                 &mkp MB5                &to 4       &msc SCRL_LEFT  &msc SCRL_RIGHT
-                &bt BT_CLR_ALL   &none       &none       &none
+                &bt BT_CLR_ALL   &mo 1       &none       &none
             >;
         };
 
@@ -114,7 +114,7 @@
             bindings = <
                 &mkp LCLK              &mkp RCLK   &mkp MCLK   &mkp MB4
                 &mkp MB5                &to 0       &msc SCRL_LEFT  &msc SCRL_RIGHT
-                &bt BT_CLR_ALL   &none       &none       &none
+                &bt BT_CLR_ALL   &mo 1       &none       &none
             >;
         };
     };
