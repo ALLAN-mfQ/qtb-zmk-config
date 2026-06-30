@@ -7,6 +7,19 @@
 #include <zephyr/dt-bindings/input/input-event-codes.h>
 
 / {
+    behaviors {
+        /* 誤爆防止: 1秒以上の長押しでのみ BT_CLR_ALL を発動 */
+        bt_clr_safe: bt_clr_safe {
+            compatible = "zmk,behavior-hold-tap";
+            label = "BT_CLR_SAFE";
+            #binding-cells = <2>;
+            tapping-term-ms = <1000>;
+            quick-tap-ms = <0>;
+            flavor = "hold-preferred";
+            bindings = <&bt>, <&none>;
+        };
+    };
+
     zip_xy_scaler: zip_xy_scaler {
         compatible = "zmk,input-processor-scaler";
         #input-processor-cells = <2>;
@@ -61,29 +74,30 @@
     keymap {
         compatible = "zmk,keymap";
 
-        /* Layer 0: Default 800 CPI
-         *  D0: LCLK  D1: RCLK  D2: MCLK  D3: MB4
-         *  D4: MB5   D5: CPI切替  D10: Scrollレイヤー  NFC1: BT_CLR_ALL
+        /*
+         * Layer 0: Default 800 CPI
+         *
+         *           COL0      COL1      COL2       COL3
+         *  ROW0     LCLK      RCLK      MCLK       MB4
+         *  ROW1     MB5       CPI切替   左チルト   右チルト
+         *  ROW2     BT_CLR    (予約)    (予約)     (予約)
          */
         default_layer {
             display-name = "800";
             bindings = <
-                &mkp LCLK       /* D0  */
-                &mkp RCLK       /* D1  */
-                &mkp MCLK       /* D2  */
-                &mkp MB4        /* D3  */
-                &mkp MB5        /* D4  */
-                &to 2           /* D5  : → 1200 CPI へ */
-                &mo 1           /* D10 : ホールドでScrollレイヤー */
-                &bt BT_CLR_ALL  /* NFC1: Bluetooth全クリア */
+                &mkp LCLK              &mkp RCLK   &mkp MCLK   &mkp MB4
+                &mkp MB5                &to 2       &msc SCRL_LEFT  &msc SCRL_RIGHT
+                &bt_clr_safe BT_CLR_ALL 0   &none       &none       &none
             >;
         };
 
-        /* Layer 1: スクロールモード（D10ホールド中） */
+        /* Layer 1: スクロールモード（MB5ホールド等で遷移する場合用に予約） */
         scroll_layer {
             display-name = "Scroll";
             bindings = <
-                &trans &trans &trans &trans &trans &trans &trans &trans
+                &trans &trans &trans &trans
+                &trans &trans &trans &trans
+                &trans &trans &trans &trans
             >;
         };
 
@@ -91,8 +105,9 @@
         layer_1200_cpi {
             display-name = "1200";
             bindings = <
-                &mkp LCLK &mkp RCLK &mkp MCLK &mkp MB4
-                &mkp MB5  &to 3     &mo 1      &bt BT_CLR_ALL
+                &mkp LCLK              &mkp RCLK   &mkp MCLK   &mkp MB4
+                &mkp MB5                &to 3       &msc SCRL_LEFT  &msc SCRL_RIGHT
+                &bt_clr_safe BT_CLR_ALL 0   &none       &none       &none
             >;
         };
 
@@ -100,8 +115,9 @@
         layer_1600_cpi {
             display-name = "1600";
             bindings = <
-                &mkp LCLK &mkp RCLK &mkp MCLK &mkp MB4
-                &mkp MB5  &to 4     &mo 1      &bt BT_CLR_ALL
+                &mkp LCLK              &mkp RCLK   &mkp MCLK   &mkp MB4
+                &mkp MB5                &to 4       &msc SCRL_LEFT  &msc SCRL_RIGHT
+                &bt_clr_safe BT_CLR_ALL 0   &none       &none       &none
             >;
         };
 
@@ -109,8 +125,9 @@
         layer_400_cpi {
             display-name = "400";
             bindings = <
-                &mkp LCLK &mkp RCLK &mkp MCLK &mkp MB4
-                &mkp MB5  &to 0     &mo 1      &bt BT_CLR_ALL
+                &mkp LCLK              &mkp RCLK   &mkp MCLK   &mkp MB4
+                &mkp MB5                &to 0       &msc SCRL_LEFT  &msc SCRL_RIGHT
+                &bt_clr_safe BT_CLR_ALL 0   &none       &none       &none
             >;
         };
     };
