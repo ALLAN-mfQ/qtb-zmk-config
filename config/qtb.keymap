@@ -7,19 +7,6 @@
 #include <zephyr/dt-bindings/input/input-event-codes.h>
 
 / {
-    behaviors {
-        /* 誤爆防止: 1秒以上の長押しでのみ BT_CLR_ALL を発動 */
-        bt_clr_safe: bt_clr_safe {
-            compatible = "zmk,behavior-hold-tap";
-            label = "BT_CLR_SAFE";
-            #binding-cells = <2>;
-            tapping-term-ms = <1000>;
-            quick-tap-ms = <0>;
-            flavor = "hold-preferred";
-            bindings = <&bt>, <&none>;
-        };
-    };
-
     zip_xy_scaler: zip_xy_scaler {
         compatible = "zmk,input-processor-scaler";
         #input-processor-cells = <2>;
@@ -87,7 +74,7 @@
             bindings = <
                 &mkp LCLK              &mkp RCLK   &mkp MCLK   &mkp MB4
                 &mkp MB5                &to 2       &msc SCRL_LEFT  &msc SCRL_RIGHT
-                &bt_clr_safe BT_CLR_ALL 0   &none       &none       &none
+                &bt BT_CLR_ALL   &none       &none       &none
             >;
         };
 
@@ -107,7 +94,7 @@
             bindings = <
                 &mkp LCLK              &mkp RCLK   &mkp MCLK   &mkp MB4
                 &mkp MB5                &to 3       &msc SCRL_LEFT  &msc SCRL_RIGHT
-                &bt_clr_safe BT_CLR_ALL 0   &none       &none       &none
+                &bt BT_CLR_ALL   &none       &none       &none
             >;
         };
 
@@ -117,7 +104,7 @@
             bindings = <
                 &mkp LCLK              &mkp RCLK   &mkp MCLK   &mkp MB4
                 &mkp MB5                &to 4       &msc SCRL_LEFT  &msc SCRL_RIGHT
-                &bt_clr_safe BT_CLR_ALL 0   &none       &none       &none
+                &bt BT_CLR_ALL   &none       &none       &none
             >;
         };
 
@@ -127,7 +114,7 @@
             bindings = <
                 &mkp LCLK              &mkp RCLK   &mkp MCLK   &mkp MB4
                 &mkp MB5                &to 0       &msc SCRL_LEFT  &msc SCRL_RIGHT
-                &bt_clr_safe BT_CLR_ALL 0   &none       &none       &none
+                &bt BT_CLR_ALL   &none       &none       &none
             >;
         };
     };
