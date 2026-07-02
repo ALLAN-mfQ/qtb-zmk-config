@@ -23,7 +23,7 @@
  *           COL0      COL1      COL2       COL3
  *  ROW0     LCLK      RCLK      MCLK       MB4
  *  ROW1     MB5       CPI切替   左チルト   右チルト
- *  ROW2     BT_CLR    (予約)    (予約)     (予約)
+ *  ROW2     BT_CLR    スクロール    (予約)     (予約)
  *
  *  ※ NFC1(P0.09)は今回未使用。将来的に独立ボタンとして
  *    使う場合は別途 zmk,kscan-gpio-direct + composite で追加可
@@ -37,7 +37,7 @@
     kscan0: kscan {
         compatible = "zmk,kscan-gpio-matrix";
         wakeup-source;
-        diode-direction = "col2row";
+        diode-direction = "none";
 
         row-gpios
             = <&xiao_d 0 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>  /* ROW0 */
