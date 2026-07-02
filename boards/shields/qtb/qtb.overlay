@@ -4,29 +4,18 @@
 /*
  * XIAO nRF52840 ピン割り当て
  *
- *  --- マトリクス (3 ROW x 4 COL = 12キー) ---
- *  D0  / P0.02 : ROW0
- *  D1  / P0.03 : ROW1
- *  D2  / P0.28 : ROW2
- *  D3  / P0.29 : COL0
- *  D4  / P0.04 : COL1
- *  D5  / P0.05 : COL2
- *  D6 / P1.11 : COL3
- *
- *  --- SPI / トラックボール ---
- *  D10  / P1.15 : IRQ
+ *  D0  / P0.02 : LCLK
+ *  D1  / P0.03 : RCLK
+ *  D2  / P0.28 : MCLK
+ *  D3  / P0.29 : MB4
+ *  D4  / P0.04 : MB5
+ *  D5  / P0.05 : 左チルト
+ *  D6  / P1.11 : 右チルト
  *  D7  / P1.12 : CS
  *  D8  / P1.13 : SCLK (ハードウェアSPI)
  *  D9  / P1.14 : SDIO (MOSI/MISO共通)
- *
- *  --- マトリクス キー配置 (7使用 / 5予約) ---
- *           COL0      COL1      COL2       COL3
- *  ROW0     LCLK      RCLK      MCLK       MB4
- *  ROW1     MB5       CPI切替   左チルト   右チルト
- *  ROW2     BT_CLR    スクロール    (予約)     (予約)
- *
- *  ※ NFC1(P0.09)は今回未使用。将来的に独立ボタンとして
- *    使う場合は別途 zmk,kscan-gpio-direct + composite で追加可
+ *  D10 / P1.15 : IRQ
+ *  NFC1/ P0.09 : スクロールレイヤー (mo 1)
  */
 
 / {
@@ -35,21 +24,17 @@
     };
 
     kscan0: kscan {
-        compatible = "zmk,kscan-gpio-matrix";
+        compatible = "zmk,kscan-gpio-direct";
         wakeup-source;
-        diode-direction = "col2row";
-
-        row-gpios
-            = <&xiao_d 0 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>  /* ROW0 */
-            , <&xiao_d 1 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>  /* ROW1 */
-            , <&xiao_d 2 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>  /* ROW2 */
-            ;
-
-        col-gpios
-            = <&xiao_d 3  GPIO_ACTIVE_HIGH>  /* COL0 */
-            , <&xiao_d 4  GPIO_ACTIVE_HIGH>  /* COL1 */
-            , <&xiao_d 5  GPIO_ACTIVE_HIGH>  /* COL2 */
-            , <&xiao_d 6 GPIO_ACTIVE_HIGH>  /* COL3 */
+        input-gpios
+            = <&xiao_d 0  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* LCLK             */
+            , <&xiao_d 1  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* RCLK             */
+            , <&xiao_d 2  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* MCLK             */
+            , <&xiao_d 3  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* MB4              */
+            , <&xiao_d 4  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* MB5              */
+            , <&xiao_d 5  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* 左チルト          */
+            , <&xiao_d 6  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* 右チルト          */
+            , <&gpio0 9   (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* スクロールレイヤー */
             ;
     };
 };
@@ -78,14 +63,14 @@
     pinctrl-0 = <&spi1_default>;
     pinctrl-1 = <&spi1_sleep>;
     pinctrl-names = "default", "sleep";
-    cs-gpios = <&xiao_d 7 GPIO_ACTIVE_LOW>;
+    cs-gpios = <&xiao_d 7 GPIO_ACTIVE_LOW>;         /* D7 / P1.12 */
 
     trackball: trackball@0 {
         status = "okay";
         compatible = "pixart,pmw3610-alt";
         reg = <0>;
         spi-max-frequency = <2000000>;
-        irq-gpios = <&xiao_d 10 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+        irq-gpios = <&xiao_d 10 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;  /* D10 / P1.15 */
         cpi = <800>;
         evt-type = <INPUT_EV_REL>;
         x-input-code = <INPUT_REL_X>;
