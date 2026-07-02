@@ -7,24 +7,6 @@
 #include <zephyr/dt-bindings/input/input-event-codes.h>
 
 / {
-    /* -----------------------------------------------------------
-     * コンボ定義
-     *  - Layer1中のMB4(3)+MB5(4)同時押し → BT_CLR_ALL
-     * ----------------------------------------------------------- */
-    combos {
-        compatible = "zmk,combos";
-
-        combo_bt_clr {
-            timeout-ms = <50>;
-            key-positions = <3 4>;        /* MB4 + MB5 */
-            bindings = <&bt BT_CLR_ALL>;
-            layers = <1 5 6 7>;           /* 全スクロールレイヤーで有効 */
-        };
-    };
-
-    /* -----------------------------------------------------------
-     * トラックボール入力プロセッサー
-     * ----------------------------------------------------------- */
     zip_xy_scaler: zip_xy_scaler {
         compatible = "zmk,input-processor-scaler";
         #input-processor-cells = <2>;
@@ -51,7 +33,7 @@
         device = <&trackball>;
 
         scroll_layer {
-            layers = <1 5 6 7>;
+            layers = <1>;
             input-processors = <&zip_scroll_scaler (-1) 32>, <&zip_scroll_mapper>;
         };
 
@@ -76,50 +58,33 @@
         };
     };
 
-    /* -----------------------------------------------------------
-     * キーマップ
-     *
-     *  キー番号 (0始まり):
-     *   0:LCLK  1:RCLK  2:MCLK  3:MB4   4:MB5
-     *   5:左チルト  6:右チルト  7:スクロールレイヤー
-     *
-     *  Layer0 通常操作:
-     *   LCLK / RCLK / MCLK / MB4 / MB5 / 左チルト / 右チルト / [ホールド→Layer1]
-     *
-     *  Layer1 スクロールモード（スクロールレイヤーボタンホールド中）:
-     *   左チルト → CPI切替（順送り）
-     *   MB4+MB5  → BT_CLR_ALL（combo）
-     * ----------------------------------------------------------- */
     keymap {
         compatible = "zmk,keymap";
 
-        /* Layer 0: Default 800 CPI */
+        /*
+         * Layer 0: Default 800 CPI
+         *
+         *           COL0      COL1      COL2       COL3
+         *  ROW0     LCLK      RCLK      MCLK       MB4
+         *  ROW1     MB5       CPI切替   左チルト   右チルト
+         *  ROW2     BT_CLR    スクロール    (予約)     (予約)
+         */
         default_layer {
             display-name = "800";
             bindings = <
-                &mkp LCLK       /* 0: LCLK      */
-                &mkp RCLK       /* 1: RCLK      */
-                &mkp MCLK       /* 2: MCLK      */
-                &mkp MB4        /* 3: MB4       */
-                &mkp MB5        /* 4: MB5       */
-                &msc SCRL_LEFT  /* 5: 左チルト   */
-                &msc SCRL_RIGHT /* 6: 右チルト   */
-                &mo 1           /* 7: →Layer1   */
+                &mkp LCLK              &mkp RCLK   &mkp MCLK   &mkp MB4
+                &mkp MB5                &to 2       &msc SCRL_LEFT  &msc SCRL_RIGHT
+                &bt BT_CLR_ALL   &mo 1       &none       &none
             >;
         };
 
-        /* Layer 1: スクロール + CPI切替 + BT_CLR */
+        /* Layer 1: スクロールモード（MB5ホールド等で遷移する場合用に予約） */
         scroll_layer {
             display-name = "Scroll";
             bindings = <
-                &trans          /* 0: LCLK      */
-                &trans          /* 1: RCLK      */
-                &trans          /* 2: MCLK      */
-                &trans          /* 3: MB4 (combo用) */
-                &trans          /* 4: MB5 (combo用) */
-                &to 2           /* 5: 左チルト → CPI切替(1200へ) */
-                &trans          /* 6: 右チルト  */
-                &trans          /* 7: ホールド継続 */
+                &trans &trans &trans &trans
+                &trans &trans &trans &trans
+                &trans &trans &trans &trans
             >;
         };
 
@@ -127,8 +92,9 @@
         layer_1200_cpi {
             display-name = "1200";
             bindings = <
-                &mkp LCLK &mkp RCLK &mkp MCLK &mkp MB4
-                &mkp MB5  &msc SCRL_LEFT  &msc SCRL_RIGHT  &mo 5
+                &mkp LCLK              &mkp RCLK   &mkp MCLK   &mkp MB4
+                &mkp MB5                &to 3       &msc SCRL_LEFT  &msc SCRL_RIGHT
+                &bt BT_CLR_ALL   &mo 1       &none       &none
             >;
         };
 
@@ -136,8 +102,9 @@
         layer_1600_cpi {
             display-name = "1600";
             bindings = <
-                &mkp LCLK &mkp RCLK &mkp MCLK &mkp MB4
-                &mkp MB5  &msc SCRL_LEFT  &msc SCRL_RIGHT  &mo 6
+                &mkp LCLK              &mkp RCLK   &mkp MCLK   &mkp MB4
+                &mkp MB5                &to 4       &msc SCRL_LEFT  &msc SCRL_RIGHT
+                &bt BT_CLR_ALL   &mo 1       &none       &none
             >;
         };
 
@@ -145,35 +112,9 @@
         layer_400_cpi {
             display-name = "400";
             bindings = <
-                &mkp LCLK &mkp RCLK &mkp MCLK &mkp MB4
-                &mkp MB5  &msc SCRL_LEFT  &msc SCRL_RIGHT  &mo 7
-            >;
-        };
-
-        /* Layer 5: スクロール@1200 + CPI切替 */
-        scroll_1200 {
-            display-name = "Scrl1200";
-            bindings = <
-                &trans &trans &trans &trans
-                &trans  &to 3  &trans  &trans
-            >;
-        };
-
-        /* Layer 6: スクロール@1600 + CPI切替 */
-        scroll_1600 {
-            display-name = "Scrl1600";
-            bindings = <
-                &trans &trans &trans &trans
-                &trans  &to 4  &trans  &trans
-            >;
-        };
-
-        /* Layer 7: スクロール@400 + CPI切替 */
-        scroll_400 {
-            display-name = "Scrl400";
-            bindings = <
-                &trans &trans &trans &trans
-                &trans  &to 0  &trans  &trans
+                &mkp LCLK              &mkp RCLK   &mkp MCLK   &mkp MB4
+                &mkp MB5                &to 0       &msc SCRL_LEFT  &msc SCRL_RIGHT
+                &bt BT_CLR_ALL   &mo 1       &none       &none
             >;
         };
     };
